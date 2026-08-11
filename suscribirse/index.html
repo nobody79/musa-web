@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MUSA Premium — Suscríbete</title>
+<style>
+  :root {
+    --paper:#f3ede2; --raised:#f8f3ea; --ink:#241c15; --soft:#4a4036; --subtle:#857567;
+    --line:rgba(36,28,21,.14); --accent:#3f5b4c;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SFMono-Regular","Courier New",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family:var(--sans);
+    display:flex; flex-direction:column; align-items:center; padding:2rem 1.25rem; }
+  .brand { font-family:var(--serif); font-weight:700; font-size:1.5rem; letter-spacing:.14em; margin:1rem 0 2rem; }
+  .card { width:100%; max-width:30rem; background:var(--raised); border:1px solid var(--line); border-radius:18px;
+    padding:2rem; box-shadow:0 24px 50px -30px rgba(60,44,30,.4); }
+  .eyebrow { font-family:var(--mono); font-size:.68rem; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); margin:0; }
+  h1 { font-family:var(--serif); font-weight:600; font-size:1.9rem; line-height:1.1; margin:.5rem 0 0; }
+  .sub { color:var(--soft); margin:.8rem 0 0; font-size:.98rem; }
+  ul { list-style:none; padding:0; margin:1.6rem 0; display:flex; flex-direction:column; gap:.7rem; }
+  li { display:flex; gap:.6rem; align-items:flex-start; font-size:.96rem; }
+  li::before { content:"✦"; color:var(--accent); }
+  .price { font-family:var(--serif); font-size:1.6rem; font-weight:600; }
+  .price small { font-family:var(--sans); font-size:.9rem; color:var(--subtle); font-weight:400; }
+  .btn { display:block; width:100%; text-align:center; font-family:var(--sans); font-weight:600; font-size:1rem;
+    background:var(--accent); color:#fff; border:1px solid var(--accent); border-radius:999px; padding:.95rem 1.5rem;
+    cursor:pointer; margin-top:1.4rem; transition:transform .15s ease; }
+  .btn:hover { transform:translateY(-2px); }
+  .btn.ghost { background:transparent; color:var(--ink); border-color:var(--line); }
+  .btn[disabled] { opacity:.6; cursor:default; transform:none; }
+  .row { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:1.2rem;
+    padding-top:1.2rem; border-top:1px solid var(--line); font-size:.9rem; color:var(--subtle); }
+  .link { background:none; border:none; color:var(--accent); font:inherit; cursor:pointer; text-decoration:underline; padding:0; }
+  .msg { margin-top:1rem; font-size:.9rem; color:var(--soft); min-height:1.2em; }
+  .msg.err { color:#a8432b; }
+  .note { max-width:30rem; margin:1.6rem auto 0; font-size:.78rem; color:var(--subtle); text-align:center; line-height:1.5; }
+  .spin { display:inline-block; width:18px; height:18px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff;
+    border-radius:50%; animation:sp .7s linear infinite; vertical-align:middle; }
+  @keyframes sp { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="brand">MUSA</div>
+  <div class="card">
+    <p class="eyebrow">MUSA Premium</p>
+    <h1>Desbloquea toda la ciudad narrada.</h1>
+    <p class="sub">La primera ruta es siempre gratis. Con Premium tienes todas las rutas narradas con voz de autor, y todo lo que viene.</p>
+    <ul>
+      <li>Todas las rutas narradas, en todas las ciudades.</li>
+      <li>Rutas nuevas cada mes en tus pasiones.</li>
+      <li>Apoyas a MUSA y a quienes crean las capas de la ciudad.</li>
+    </ul>
+    <div class="price">4,99 € <small>/mes · cancela cuando quieras</small></div>
+
+    <div id="action">
+      <button class="btn" disabled><span class="spin"></span></button>
+    </div>
+    <p class="msg" id="msg"></p>
+
+    <div class="row" id="who" hidden>
+      <span id="email"></span>
+      <button class="link" id="signout">Cerrar sesión</button>
+    </div>
+  </div>
+  <p class="note">Tu suscripción se gestiona en la web y se activa en la app al iniciar sesión con la misma cuenta. El pago es seguro con Stripe.</p>
+
+<script>
+  // ⚠️ Rellenar con tu clave publicable de Clerk de PRODUCCIÓN (empieza por pk_live_).
+  const CLERK_PK = "pk_live_REEMPLAZA_CON_TU_CLAVE";
+  const API = "https://musa-api-production.up.railway.app";
+
+  const action = document.getElementById("action");
+  const msg = document.getElementById("msg");
+  const who = document.getElementById("who");
+  const emailEl = document.getElementById("email");
+
+  function setMsg(text, isErr) { msg.textContent = text || ""; msg.className = "msg" + (isErr ? " err" : ""); }
+
+  function render() {
+    const user = window.Clerk && window.Clerk.user;
+    if (!user) {
+      who.hidden = true;
+      action.innerHTML = '<button class="btn" id="signin">Inicia sesión para suscribirte</button>';
+      document.getElementById("signin").onclick = () => window.Clerk.openSignIn({});
+      return;
+    }
+    who.hidden = false;
+    emailEl.textContent = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : "Tu cuenta";
+    action.innerHTML = '<button class="btn" id="sub">Suscribirse — 4,99 €/mes</button>';
+    document.getElementById("sub").onclick = subscribe;
+  }
+
+  async function subscribe() {
+    const btn = document.getElementById("sub");
+    btn.disabled = true; btn.innerHTML = '<span class="spin"></span>'; setMsg("");
+    try {
+      const token = await window.Clerk.session.getToken();
+      const r = await fetch(API + "/api/billing/checkout", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + token }
+      });
+      if (r.status === 503) { setMsg("La suscripción estará disponible muy pronto."); }
+      else if (!r.ok) { setMsg("No se pudo iniciar el pago. Inténtalo de nuevo.", true); }
+      else {
+        const data = await r.json();
+        if (data.url) { window.location.href = data.url; return; }
+        setMsg("No se pudo iniciar el pago. Inténtalo de nuevo.", true);
+      }
+    } catch (e) {
+      setMsg("Error de conexión. Inténtalo de nuevo.", true);
+    }
+    btn.disabled = false; btn.textContent = "Suscribirse — 4,99 €/mes";
+  }
+
+  document.getElementById("signout").onclick = async () => {
+    await window.Clerk.signOut();
+    render();
+  };
+
+  function start() {
+    window.Clerk.load().then(() => {
+      render();
+      window.Clerk.addListener(render);
+    }).catch(() => setMsg("No se pudo cargar el acceso. Recarga la página.", true));
+  }
+
+  (function () {
+    if (!CLERK_PK || CLERK_PK.indexOf("REEMPLAZA") !== -1) {
+      action.innerHTML = "";
+      setMsg("Configuración pendiente: falta la clave de Clerk de producción.");
+      return;
+    }
+    const s = document.createElement("script");
+    s.async = true; s.crossOrigin = "anonymous";
+    s.setAttribute("data-clerk-publishable-key", CLERK_PK);
+    s.src = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
+    s.onload = start;
+    s.onerror = () => setMsg("No se pudo cargar el acceso. Recarga la página.", true);
+    document.head.appendChild(s);
+  })();
+</script>
+</body>
+</html>
