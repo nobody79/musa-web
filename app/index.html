@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MUSA · Descarga la app</title>
+<meta name="description" content="MUSA, la ciudad según tus pasiones. Descárgala en la App Store; muy pronto en Google Play.">
+<link rel="icon" type="image/png" href="/assets/landing/favicon.eac1ace1.png">
+<script>
+// Destino fijo de los QR impresos (flyers, expositores, tarjetas). El QR apunta
+// siempre aquí, así que nunca hay que reimprimir: lo que cambia es esta página.
+//   - iPhone / iPad -> directo a la App Store.
+//   - Android       -> a Google Play si PLAY_LIVE; si no, la página «muy pronto».
+//   - Ordenador     -> la página, con las dos tiendas.
+// EL DÍA QUE MUSA SALGA EN GOOGLE PLAY: cambia PLAY_LIVE a true y publica.
+// Con ?ver en la URL no redirige (para revisar la página desde un móvil).
+var PLAY_LIVE = false;
+var APP_STORE = 'https://apps.apple.com/app/id6795834796';
+var PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.musaapp.world';
+(function () {
+  if (/[?&]ver\b/.test(location.search)) return;
+  var ua = navigator.userAgent || '';
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var android = /Android/i.test(ua);
+  if (ios) location.replace(APP_STORE);
+  else if (android && PLAY_LIVE) location.replace(PLAY_STORE);
+})();
+</script>
+<style>
+@font-face{font-family:Fraunces;font-weight:600;font-display:swap;src:url(/assets/landing/fraunces-600.6c521583.woff2) format("woff2")}
+@font-face{font-family:Fraunces;font-weight:900;font-display:swap;src:url(/assets/landing/fraunces-900.449683a2.woff2) format("woff2")}
+@font-face{font-family:Fraunces;font-style:italic;font-weight:400;font-display:swap;src:url(/assets/landing/fraunces-italic-400.febcd0f3.woff2) format("woff2")}
+:root{--papel:#f4eee2;--tinta:#1a1208;--suave:#6b5d4d;--vino:#7a1f2b;--linea:#d9cdb8}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--papel);color:var(--tinta)}
+body{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;font:17px/1.55 Fraunces,Georgia,serif;text-align:center}
+main{width:100%;max-width:420px}
+.medalla{width:112px;height:112px;border-radius:50%;display:block;margin:0 auto 18px;
+  box-shadow:0 10px 30px rgba(90,60,30,.18)}
+h1{font-weight:900;font-size:44px;letter-spacing:.06em;margin:0}
+.lema{font-style:italic;font-size:20px;color:var(--suave);margin:6px 0 34px}
+.tienda{display:block;margin:0 auto 14px}
+.tienda img{height:56px;width:auto;display:inline-block}
+.play{display:inline-flex;align-items:center;gap:12px;height:56px;padding:0 22px;border-radius:12px;
+  border:1.5px dashed var(--suave);color:var(--suave);font-weight:600;font-size:16px;text-align:left;line-height:1.2}
+.play small{display:block;font-weight:400;font-style:italic;font-size:14px}
+.play svg{flex:none}
+.nota{margin:28px auto 0;padding-top:22px;border-top:1px solid var(--linea);font-size:16px;color:var(--suave)}
+.nota a,.pie a{color:var(--vino);font-weight:600}
+.pie{margin-top:36px;font-size:14px;color:var(--suave)}
+html[lang=es] [data-l=en],html[lang=en] [data-l=es]{display:none !important}
+</style>
+</head>
+<body>
+<main>
+  <img class="medalla" src="/assets/landing/logo.9a2c2410.webp" alt="MUSA">
+  <h1>MUSA</h1>
+  <p class="lema"><span data-l="es">La ciudad según tus pasiones</span><span data-l="en">The city, through your passions</span></p>
+
+  <a class="tienda" href="https://apps.apple.com/app/id6795834796">
+    <img data-l="es" src="/assets/landing/badge-appstore-es.b3bca9d8.svg" alt="Descárgala en la App Store">
+    <img data-l="en" src="/assets/landing/badge-appstore-en.2f2fe1cb.svg" alt="Download on the App Store">
+  </a>
+
+  <div class="tienda">
+    <span class="play" id="play">
+      <svg width="26" height="28" viewBox="0 0 26 28" aria-hidden="true"><path d="M2 1.5l14 12.5L2 26.5c-.6-.3-1-1-1-1.8V3.3c0-.8.4-1.5 1-1.8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 14l4.6-4.2 3.6 2c1.3.8 1.3 2.6 0 3.4l-3.6 2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <span><span data-l="es">Google Play<small>Muy pronto en Android</small></span><span data-l="en">Google Play<small>Coming soon to Android</small></span></span>
+    </span>
+  </div>
+
+  <p class="nota" id="beta">
+    <span data-l="es">¿Tienes Android y quieres probarla antes que nadie? <a href="https://groups.google.com/g/musa-testers">Únete a la prueba</a>.</span>
+    <span data-l="en">On Android and want to try it first? <a href="https://groups.google.com/g/musa-testers">Join the beta</a>.</span>
+  </p>
+
+  <p class="pie"><a href="/" data-l="es">Conoce MUSA</a><a href="/en/" data-l="en">Discover MUSA</a> · musaparadis.com</p>
+</main>
+<script>
+// Idioma: español si el móvil está en español; si no, inglés.
+document.documentElement.lang = /^es\b/i.test(navigator.language || '') ? 'es' : 'en';
+// Cuando PLAY_LIVE sea true, el hueco de «muy pronto» pasa a enlace real (para
+// quien llegue desde un ordenador) y desaparece la invitación a la prueba.
+if (PLAY_LIVE) {
+  var p = document.getElementById('play');
+  var a = document.createElement('a');
+  a.className = 'play'; a.href = PLAY_STORE; a.style.borderStyle = 'solid'; a.style.color = 'var(--tinta)';
+  a.innerHTML = p.innerHTML.replace(/Muy pronto en Android/, 'Disponible en Android').replace(/Coming soon to Android/, 'Available on Android');
+  p.replaceWith(a);
+  document.getElementById('beta').remove();
+}
+</script>
+</body>
+</html>
